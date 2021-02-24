@@ -94,10 +94,10 @@ public class BoardController {
 		
 	}
 	
+	@PreAuthorize("principal.username == #board.writer")
 	@PostMapping("/modify")
-	public String modify(BoardVO board, @ModelAttribute("cri") Criteria cri, 
-			RedirectAttributes rttr) {
-		
+	public String modify(BoardVO board, Criteria cri, RedirectAttributes rttr){
+			
 		log.info("modify: " + board);
 		
 		if(service.modify(board)) {
@@ -114,9 +114,10 @@ public class BoardController {
 		
 	}
 	
+	@PreAuthorize("principal.username == #writer")
 	@PostMapping("/remove")
-	public String remove(@RequestParam("bno") Long bno, 
-			@ModelAttribute("cri") Criteria cri, RedirectAttributes rttr) {
+	public String remove(@RequestParam("bno") Long bno, Criteria cri, 
+			RedirectAttributes rttr, String writer) {
 		
 		log.info("remove: " + bno);
 		

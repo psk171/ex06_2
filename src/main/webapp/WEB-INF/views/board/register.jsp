@@ -234,6 +234,9 @@ $("button[type='submit']").on("click", function(e) {
 			
 		}
 		
+		var csrfHeaderName = "${_csrf.headerName}";
+		var csrfTokenValue = "${_csrf.token}";
+		
 		$("input[type='file']").change(function(e) {
 		
 			var formData = new FormData();
@@ -254,6 +257,9 @@ $("button[type='submit']").on("click", function(e) {
 				url: '/uploadAjaxAction',
 				processData: false,
 				contentType: false, 
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				data: formData, 
 				type: 'POST',
 				dataType: 'json',
@@ -277,6 +283,9 @@ $("button[type='submit']").on("click", function(e) {
 			$.ajax({
 				url: '/deleteFile',
 				data: {fileName: targetFile, type: type},
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				dataType: 'text',
 				type: 'POST', 
 				success: function(result) {

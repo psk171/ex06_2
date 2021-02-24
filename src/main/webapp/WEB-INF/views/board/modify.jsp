@@ -2,6 +2,9 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
+
 <%@include file="../includes/header.jsp"%>
 
 <div class="row">
@@ -20,6 +23,8 @@
 			<div class="panel-body">
 			
 				<form role="form" action="/board/modify" method="post">
+				
+				<input type="hidden" name="${_csrf.parameterName }" value="${_csrf.token }">
 				
 				<input type="hidden" name="pageNum" value='<c:out value="${cri.pageNum }"/>'>
 				<input type="hidden" name="amount" value='<c:out value="${cri.amount }"/>'>
@@ -56,10 +61,15 @@
 						value = "${board.updateDate }"/>' readonly="readonly">
 					</div>
 					
+					<sec:authentication property="principal" var="pinfo"/>
+					<sec:authorize access="isAuthenticated()">
+					<c:if test="${pinfo.username eq board.writer }">
 					<button type="submit" data-oper='modify' class="btn btn-default">
 					Modify</button>
 					<button type="submit" data-oper='remove' class="btn btn-danger">
 					Remove</button>
+					</c:if>
+					</sec:authorize>
 					<button type="submit" data-oper='list' class="btn btn-info">
 					List</button>
 					
@@ -286,6 +296,9 @@ function showUploadResult(uploadResultArr) {
 			
 		}
 		
+		var csrfHeaderName = "${_csrf.headerName}";
+		var csrfTokenValue = "${_csrf.token}";
+		
 		$("input[type='file']").change(function(e) {
 		
 			var formData = new FormData();
@@ -306,6 +319,9 @@ function showUploadResult(uploadResultArr) {
 				url: '/uploadAjaxAction',
 				processData: false,
 				contentType: false, 
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader(csrfHeaderName, csrfTokenValue);
+				},
 				data: formData, 
 				type: 'POST',
 				dataType: 'json',
